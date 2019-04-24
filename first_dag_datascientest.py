@@ -18,6 +18,8 @@ default_args = {
     # 'email_on_retry': False,
 }
 
+# Instantiation of the DAG first_dag_datascientest
+
 dag = DAG('first_dag_datascientest', default_args=default_args, schedule_interval=timedelta(minutes=5))
 
 # First task definition : DummyOperator
