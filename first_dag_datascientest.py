@@ -46,5 +46,7 @@ print_execution_date = PythonOperator(task_id='print_execution_date',
                                       python_callable=print_date,
                                       provide_context=True,
                                       dag=dag)
+                                      
+# Tasks dependencies
 
 start_dag >> wait_before_printing >> print_execution_date
