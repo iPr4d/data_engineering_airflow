@@ -40,9 +40,12 @@ default_args = {
     # 'email_on_retry': False,
 }
 
-dag = DAG('variables_xcoms_hooks', default_args=default_args, schedule_interval=timedelta(minutes=15))
+dag = DAG(dag_id='variables_xcoms_hooks',
+          default_args=default_args,
+          schedule_interval=timedelta(minutes=15))
 
 # Python callables definition for PythonOperator tasks
+
 
 def get_tweets(**kwargs):
 
@@ -56,7 +59,10 @@ def get_tweets(**kwargs):
         created_at = str(tweet.created_at).encode('utf-8')
         text = tweet.text.encode('utf-8')
         author = tweet.author.screen_name.encode('utf-8')
-        list_tweets += [{'id': id, 'text': text, 'date': created_at, 'author': author}]
+        list_tweets += [{'id': id, 
+                         'text': text, 
+                         'date': created_at, 
+                         'author': author}]
 
     # automatically push data to XComs by returning result
     return list_tweets
@@ -74,7 +80,10 @@ def store_data_mysql(**kwargs):
     # connect to MySQL server through Hook
     connection = MySqlHook(mysql_conn_id='datascientest_sql_tweets')
 
-    sql_creation = 'CREATE TABLE IF NOT EXISTS {} (id varchar(255) primary key, text varchar(1000), author varchar(255), date varchar(255))'.format(subject)
+    sql_creation = 'CREATE TABLE IF NOT EXISTS {} (id varchar(255) primary' \
+                   'key, text varchar(1000), author varchar(255), '\
+                   'date varchar(255))'.format(subject)
+
     connection.run(sql_creation)
 
     # adding tweets to MySQL subject table

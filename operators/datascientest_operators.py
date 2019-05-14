@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import logging
+from datetime import datetime
 
 from airflow.hooks.mysql_hook import MySqlHook
 from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
-from datetime import datetime
+
 
 class MySQLToMySQLOperator(BaseOperator):
     """
@@ -22,7 +23,8 @@ class MySQLToMySQLOperator(BaseOperator):
     :type parameters: dict
     """
 
-    template_fields = ('sql_queries', 'parameters', 'mysql_tables', 'mysql_preoperator', 'mysql_postoperator')
+    template_fields = ('sql_queries', 'parameters', 'mysql_tables',
+                       'mysql_preoperator', 'mysql_postoperator')
     template_ext = ('.sql',)
     ui_color = '#a87abc'
 
@@ -51,18 +53,20 @@ class MySQLToMySQLOperator(BaseOperator):
         src_mysql = MySqlHook(mysql_conn_id=self.src_mysql_conn_id)
         dest_mysql = MySqlHook(mysql_conn_id=self.dest_mysql_conn_id)
 
-        logging.info("Transferring MySQL query results into other MySQL database.")
+        logging.info(
+            "Transferring MySQL query results into other MySQL database.")
         conn = src_mysql.get_conn()
         cursor = conn.cursor()
 
         if self.mysql_preoperator:
-                logging.info("Running MySQL preoperator")
-                dest_mysql.run(self.mysql_preoperator)
+            logging.info("Running MySQL preoperator")
+            dest_mysql.run(self.mysql_preoperator)
 
         for index, sql in enumerate(self.sql_queries):
             cursor.execute(sql, self.parameters)
 
-            logging.info("Inserting rows into MySQL table {name}".format(name=self.mysql_tables[index]))
+            logging.info("Inserting rows into MySQL table {name}".format(
+                name=self.mysql_tables[index]))
 
             dest_mysql.insert_rows(table=self.mysql_tables[index], rows=cursor)
 
