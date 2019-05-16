@@ -1,4 +1,3 @@
 tweepy
-apache-airflow
+pymongo
 mysql-python
-
