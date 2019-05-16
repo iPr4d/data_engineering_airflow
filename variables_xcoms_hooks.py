@@ -10,7 +10,7 @@ from pymongo import MongoClient
 
 # Utils
 
-consumer_key = Variable.get('consumer_key')
+consumer_key = Variable.get('api_key')
 consumer_secret = Variable.get('consumer_secret')
 access_token = Variable.get('access_token')
 access_token_secret = Variable.get('access_token_secret')
