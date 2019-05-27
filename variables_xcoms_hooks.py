@@ -15,8 +15,10 @@ consumer_secret = Variable.get('consumer_secret')
 access_token = Variable.get('access_token')
 access_token_secret = Variable.get('access_token_secret')
 
-subjects_ = Variable.get('subjects').split(',')
-subjects = [x.encode('utf-8') for x in subjects_]
+# subjects_ = Variable.get('subjects').split(',')
+# subjects = [x.encode('utf-8') for x in subjects_]
+
+subjects = ['trump', 'macron']
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
