@@ -53,7 +53,7 @@ dag = DAG(dag_id='variables_xcoms_hooks',
           default_args=default_args,
           schedule_interval=timedelta(minutes=15))
 
-# Python callables definition for PythonOperator tasks
+# Python callables definition for PythonOperator task
 def get_weather(**kwargs):
 
     # task instance kwargs op_kwargs
@@ -82,7 +82,7 @@ def store_data_mysql(**kwargs):
     # connect to MySQL server (and database!) through MySqlHook
     connection = MySqlHook(mysql_conn_id='datascientest_sql_weather')
 
-    # create table to store weather data if not exists
+    # create table if not exists to store weather data
     sql_creation = 'CREATE TABLE IF NOT EXISTS cities_live (id int primary ' \
                    'key not null auto_increment, city varchar(1000), temp_live float, ' \
                    'temp_min float, temp_max float, humidity float, pressure float, weather_description varchar(1000), ' \
