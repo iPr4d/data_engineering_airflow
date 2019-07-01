@@ -49,8 +49,7 @@ class MySQLToMongoOperator(BaseOperator):
 
     def execute(self, context):
         logging.info('Executing: ' + str(self.sql_queries))
-        mysql_hook = MySqlHook(mysql_conn_id=self.mysql_conn_id, 
-                               cursor='dictcursor')
+        mysql_hook = MySqlHook(mysql_conn_id=self.mysql_conn_id)
         mongo_hook = MongoHook(mongo_conn_id=self.mongo_conn_id)
 
         logging.info(

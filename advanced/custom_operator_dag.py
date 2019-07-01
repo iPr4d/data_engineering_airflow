@@ -5,9 +5,6 @@ from airflow.models import Variable
 from airflow.operators.dummy_operator import DummyOperator
 from operators.datascientest_operators import MySQLToMongoOperator
 
-cities_ = Variable.get('cities').split(',')
-cities = [x.encode('utf-8') for x in cities_]
-
 # Utils
 def transform_date(today):
     day = str(today.day)
@@ -24,6 +21,9 @@ sql_queries = ['SELECT AVG(temp_live), city, AVG(pressure), AVG(wind_speed)'
                'SUBSTRING(time, 1, 10) = {today}'
                .format(city=city, today=transform_date(datetime.today()))
                for city in cities]
+
+cities_ = Variable.get('cities').split(',')
+cities = [x.encode('utf-8') for x in cities_]
 
 # DAG instantiation
 default_args = {
@@ -44,14 +44,14 @@ start_dag = DummyOperator(task_id='start_dag',
                           dag=dag)
 
 
-extract_weather = MySQLToMongoOperator(
+transfer_weather_data = MySQLToMongoOperator(
     sql_queries=sql_queries,
     mongo_collections=cities,
     mysql_conn_id='datascientest_sql_weather',
     mongo_conn_id='datascientest_mongo_weather',
-    task_id='extract_weather',
+    task_id='extract_weather_data',
     dag=dag)
 
 # Tasks dependencies
 
-start_dag >> extract_weather
+start_dag >> transfer_weather_data
