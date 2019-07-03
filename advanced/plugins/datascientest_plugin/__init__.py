@@ -1,6 +1,6 @@
 from airflow.plugins_manager import AirflowPlugin
 
-from datascientest_plugin.operators import MySQLToMongoOperator
+from datascientest_plugin.operators.MySQLToMongoOperator import MySQLToMongoOperator
 
 
 class DatascientestPlugin(AirflowPlugin):
