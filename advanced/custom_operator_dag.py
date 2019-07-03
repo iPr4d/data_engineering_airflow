@@ -3,27 +3,28 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.models import Variable
 from airflow.operators.dummy_operator import DummyOperator
-from operators.datascientest_operators import MySQLToMongoOperator
+from airflow.operators.datascientest_plugin import MySQLToMongoOperator
 
 # Utils
 def transform_date(today):
-    day = str(today.day)
-    month = str(today.month)
-    year = str(today.year)
-    if len(day) == 1:
-        day = '0'+day
-    if len(month) == 1:
-        month = '0'+month
-    return year + '-' + month + '-' + day
+    hour_min = today.hour
+    day = today.day
+    if hour_min == 23:
+        return [today.replace(hour=hour_min, minute=0, second=0),
+                today.replace(day=day+1, hour=0, minute=0, second=0)]
+    return [today.replace(hour=hour_min, minute=0, second=0),
+                today.replace(hour=hour_min+1, minute=0, second=0)]
 
-sql_queries = ['SELECT AVG(temp_live), city, AVG(pressure), AVG(wind_speed)'
-               ' from cities_live WHERE city = "{city}" AND '
-               'SUBSTRING(time, 1, 10) = {today}'
-               .format(city=city, today=transform_date(datetime.today()))
-               for city in cities]
+list_dates = transform_date(datetime.utcnow())
 
 cities_ = Variable.get('cities').split(',')
 cities = [x.encode('utf-8') for x in cities_]
+
+sql_queries = ['SELECT AVG(temp_live), city, AVG(pressure), AVG(wind_speed)'
+               ' from cities_live WHERE city = "{city}" AND '
+               'time >= "{date_min}" AND time <= "{date_max}"'
+               .format(city=city, date_min=str(list_dates[0]), date_max=str(list_dates[1]))
+               for city in cities]
 
 # DAG instantiation
 default_args = {
@@ -36,7 +37,7 @@ default_args = {
 
 dag = DAG(dag_id='custom_operator_dag',
           default_args=default_args,
-          schedule_interval="@once")
+          schedule_interval=timedelta(hours=1))
 
 # Tasks definition
 
