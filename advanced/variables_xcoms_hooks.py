@@ -16,9 +16,9 @@ cities = [x.encode('utf-8') for x in cities_]
 def open_weather_response_parser(response_text, city):
     response_dict = json.loads(response_text)
     main = response_dict['main']
-    temp_live = main['temp'] - 273.15
-    temp_max = main['temp_max'] - 273.15
-    temp_min = main['temp_min'] - 273.15
+    temp_live = round(main['temp'] - 273.15,2)
+    temp_max = round(main['temp_max'] - 273.15, 2)
+    temp_min = round(main['temp_min'] - 273.15,2)
     humidity = main['humidity']
     pressure = main['pressure']
     weather = response_dict['weather'][0]['main']
@@ -32,7 +32,7 @@ def open_weather_response_parser(response_text, city):
                        'pressure': pressure,
                        'weather_description': weather,
                        'wind_speed': wind_speed,
-                       'time': str(time)}
+                       'time': time}
     return parsed_response
 
 
@@ -51,7 +51,7 @@ default_args = {
 
 dag = DAG(dag_id='variables_xcoms_hooks',
           default_args=default_args,
-          schedule_interval=timedelta(minutes=15))
+          schedule_interval=timedelta(minutes=10))
 
 # Python callables definition for PythonOperator task
 def get_weather(**kwargs):
@@ -86,7 +86,7 @@ def store_data_mysql(**kwargs):
     sql_creation = 'CREATE TABLE IF NOT EXISTS cities_live (id int primary ' \
                    'key not null auto_increment, city varchar(1000), temp_live float, ' \
                    'temp_min float, temp_max float, humidity float, pressure float, weather_description varchar(1000), ' \
-                   'wind_speed float, time varchar(255))'
+                   'wind_speed float, time datetime)'
     connection.run(sql_creation)
 
     # adding new weather results to MySQL weather table
